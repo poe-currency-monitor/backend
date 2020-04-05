@@ -7,3 +7,9 @@ export interface APIError {
   status: number;
   stack?: string;
 }
+
+export interface User {
+  account_name: string;
+  jwt: string;
+  poesessid: string;
+}
