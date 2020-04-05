@@ -12,7 +12,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "baseUrl": ".",
-    "types": ["node", "jest"],
+    "types": ["node"],
     "lib": ["esnext", "DOM"],
     "paths": {
       "*": ["node_modules/*", "./types/*"],
