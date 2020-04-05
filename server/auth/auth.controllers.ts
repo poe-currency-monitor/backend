@@ -1,9 +1,10 @@
+import { Request, Response } from 'express';
 import { v1 as uuid } from 'uuid';
 import jwt from 'jsonwebtoken';
-import { Request, Response, NextFunction } from 'express';
+import fetch from 'node-fetch';
 
-import { APIError } from '@interfaces/express.interfaces';
 import env from '@config/env';
+import SQLite from '@config/sqlite';
 
 const jwtSignOptions: jwt.SignOptions = {
   expiresIn: '7d',
@@ -14,22 +15,39 @@ const jwtSignOptions: jwt.SignOptions = {
  *
  * @param req Express request
  * @param res Express response
- * @param next Express next-function
  */
-export default (req: Request, res: Response, next: NextFunction): void => {
-  const secret = req.body.secret as string;
+export default (req: Request, res: Response): Promise<void> => {
+  const poesessid = req.body.poesessid as string;
 
-  if (secret !== env.secrets.jwt) {
-    const error: APIError = {
-      name: 'Authentication error',
-      message: 'Invalid authentication credentials',
-      status: 403,
-    };
+  return fetch('https://www.pathofexile.com/my-account', {
+    method: 'get',
+    redirect: 'follow',
+    headers: {
+      Cookie: `POESESSID=${poesessid}`,
+    },
+  })
+    .then((response) => response.text())
+    .then(async (html) => {
+      const accountNameMatches = html.match(/\/account\/view-profile\/(.*?)"/);
 
-    next(error);
-  } else {
-    const token = jwt.sign({ id: uuid() }, env.secrets.jwt, jwtSignOptions);
+      if (accountNameMatches && accountNameMatches[1]) {
+        const accountName = accountNameMatches[1];
+        const db = await new SQLite().open();
+        const token = jwt.sign({ id: uuid() }, env.secrets.jwt, jwtSignOptions);
 
-    res.json({ token });
-  }
+        const user = await db.get(`SELECT account_name FROM users WHERE account_name = '${accountName}'`);
+
+        if (!user) {
+          await db.exec(`INSERT INTO users VALUES ('${accountName}', '${token}', '${poesessid}');`);
+        } else {
+          await db.exec(
+            `UPDATE users SET jwt = '${token}', poesessid = '${poesessid}' WHERE account_name = '${accountName}';`,
+          );
+        }
+
+        res.json({ token });
+      } else {
+        res.status(400).json({ error: 'Invalid POESESSID' });
+      }
+    });
 };
