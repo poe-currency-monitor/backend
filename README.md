@@ -28,7 +28,6 @@ To get the server running locally:
 - uuid: generate RFC4122 (v1, v4, and v5) UUIDs
 - dotenv: load environment variables from a `.env` file
 - module-aliases: create aliases of directories and register custom module paths (used for TypeScript custom paths)
-- jest: test-runner
 
 ### Structure
 
@@ -48,8 +47,6 @@ To get the server running locally:
 - `yarn lint:fix`: run ESLint and fix all auto-fixable ESLint rules.
 - `yarn serve-coverage`: start an HTTP server for the coverage directory.
 - `yarn start`: execute the compiled app (from `/dist`) in production environment.
-- `yarn test`: run Jest tests (`--silent --verbose` as it's meant to be used by CI).
-- `yarn test:watch`: run Jest in `--watch` mode.
 
 ### Error-handling
 
@@ -60,14 +57,6 @@ There are multiple error handlers already provided in the `config/express.ts` fi
 - A third error-handler for all the other errors.
 
 If in development, the returned error (as a JSON response) will show the stacktrace to help you debug.
-
-### Testing and CI
-
-Jest is integrated with a sample test (`server/auth/auth.spec.ts`) to give you an idea.
-
-When running `yarn test`, a `/coverage` folder will be generated so you can take a look at the code-coverage by running `yarn serve-coverage`.
-
-CI is powered by GitHub Actions. The configuration file of the GitHub Action is located under `.github/workflow/build.yml`.
 
 ### Linting + formatting
 
