@@ -1,6 +1,6 @@
-# Node Express REST-API template
+# PoE Currency Monitor back-end
 
-> A template to quickly generate a Node.js REST-API, in TypeScript.
+> Generated from the [Node Express REST-API template](https://github.com/TotomInc/node-express-mongo-rest-api).
 
 ## Getting started
 
@@ -35,7 +35,7 @@ To get the server running locally:
 - `.env.example` an example of environment variables that are used in this template.
 - `index.ts` entry point of the application.
 - `build/` scripts used for deployment.
-- `config/` various configuration files (express, sentry, environment variables, ...).
+- `config/` various configuration files (express and environment variables).
 - `interfaces/` contains various TypeScript interfaces.
 - `server/` contains a folder for every route, this is the main Express logic for all of your routes.
 - `types/` override specific modules `*.d.ts.` typings.
@@ -46,8 +46,6 @@ To get the server running locally:
 - `yarn dev`: run Nodemon, hot-reload the development server.
 - `yarn lint`: run ESLint, print warnings and errors (doesn't auto-fix).
 - `yarn lint:fix`: run ESLint and fix all auto-fixable ESLint rules.
-- `yarn release`: build source-files and create a production Sentry release.
-- `yarn release:staging`: build source-files and create a staging Sentry release.
 - `yarn serve-coverage`: start an HTTP server for the coverage directory.
 - `yarn start`: execute the compiled app (from `/dist`) in production environment.
 - `yarn test`: run Jest tests (`--silent --verbose` as it's meant to be used by CI).
@@ -76,19 +74,6 @@ CI is powered by GitHub Actions. The configuration file of the GitHub Action is 
 Linting is done with ESLint and formatting with Prettier.
 
 There are already a set of ESLint rules which includes TypeScript best-practices, the `.eslintrc.js` extends the [`@totominc/eslint-config-typescript`](https://www.npmjs.com/package/@totominc/eslint-config-typescript) configuration.
-
-### Sentry
-
-[Sentry](https://sentry.io/) is integrated in the project.
-
-Make sure to define Sentry-related environment variables in your `.env` (project DSN, application token, organization, project, release).
-
-#### Releasing a new version
-
-- Update the `SENTRY_RELEASE` environment variable
-- Run `yarn release` or `yarn release:staging` depending on the environment you want
-
-Source-maps will be uploaded to Sentry in order to give more context to the errors, which will make debugging easier.
 
 ## License
 
