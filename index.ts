@@ -8,14 +8,6 @@ import './config/modules-aliases';
 
   dotenv.config();
 
-  const sentry = await import('./config/sentry').then((pkg) => pkg.default);
-
-  sentry.init();
-
-  const mongo = await import('./config/mongo').then((pkg) => pkg.default);
-
-  await mongo.init();
-
   const app = await import('./config/express').then((pkg) => pkg.default);
 
   app.init();

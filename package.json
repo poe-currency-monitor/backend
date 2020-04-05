@@ -1,21 +1,19 @@
 {
-  "name": "node-express-rest-api",
-  "description": "A template to quickly generate a Node.js REST-API, in TypeScript.",
+  "name": "poe-currency-monitor-backend",
+  "description": "Backend for the PoE Currency Monitor web-app.",
   "version": "0.1.0",
   "main": "dist/index.js",
   "author": "TotomInc <cazade.thomas@gmail.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/TotomInc/node-express-rest-api"
+    "url": "https://github.com/TotomInc/poe-currency-monitor-backend"
   },
   "scripts": {
     "build": "rm -rf ./dist && tsc -p tsconfig.production.json",
     "dev": "nodemon",
     "lint": "eslint -c .eslintrc.js --ext \".js,.ts\" .",
     "lint:fix": "eslint --fix -c .eslintrc.js --ext \".js,.ts\" .",
-    "release": "yarn build && node ./build/sentry-release --environment production",
-    "release:staging": "yarn build && node ./build/sentry-release --environment staging",
     "serve-coverage": "http-server ./coverage",
     "start": "cross-env NODE_ENV=production node ./dist/index.js",
     "test": "jest --verbose --silent",

@@ -7,7 +7,7 @@ import authRoutes from './auth/auth.routes';
  */
 const router = Router();
 
-router.get('/heartbeat', (req, res) => res.json('OK'));
+router.get('/heartbeat/', (req, res) => res.json('OK'));
 
 router.use('/auth', authRoutes);
 
