@@ -19,6 +19,10 @@ const envSchema = joi
       .number()
       .port()
       .default(8443),
+
+    PRIVATE_KEY_PATH: joi.string().required(),
+    CERTIFICATE_PATH: joi.string().required(),
+    CHAIN_PATH: joi.string().required(),
   })
   .unknown()
   .required();
@@ -33,6 +37,12 @@ export default {
   nodeEnv: value.NODE_ENV as string,
   port: value.API_PORT as number,
   httpsPort: value.API_HTTPS_PORT as number,
+
+  https: {
+    privateKey: value.PRIVATE_KEY_PATH as string,
+    certificate: value.CERTIFICATE_PATH as string,
+    chain: value.CHAIN_PATH as string,
+  },
 
   secrets: {
     jwt: value.JWT_SECRET as string,

@@ -35,18 +35,9 @@ const limiter = rateLimit({
   max: 15,
 });
 
-/**
- * If has a `server.key` file, we can add HTTPS support.
- */
-const hasSSLCerts = fs.existsSync(path.join(__dirname, '../sslcerts/server.key'));
-
-let sslKey: string | null = null;
-let sslCert: string | null = null;
-
-if (hasSSLCerts) {
-  sslKey = fs.readFileSync(path.join(__dirname, '../sslcerts/server.key'), 'utf-8');
-  sslCert = fs.readFileSync(path.join(__dirname, '../sslcerts/server.crt'), 'utf-8');
-}
+const sslPrivateKey = fs.readFileSync(path.join(env.https.privateKey));
+const sslCertificate = fs.readFileSync(path.join(env.https.certificate));
+const sslChain = fs.readFileSync(path.join(env.https.chain));
 
 // Parse body params and attach them to `req.body`
 app.use(bodyParser.json());
@@ -114,29 +105,23 @@ export default {
   init: (): { app: Express; httpServer: http.Server; httpsServer: https.Server | null } => {
     const httpServer = http.createServer(app);
 
-    let httpsServer: https.Server | null = null;
-
-    if (hasSSLCerts && sslCert && sslKey) {
-      httpsServer = https.createServer(
-        {
-          key: sslKey,
-          cert: sslCert,
-        },
-        app,
-      );
-    }
+    const httpsServer = https.createServer(
+      {
+        key: sslPrivateKey,
+        cert: sslCertificate,
+        ca: sslChain,
+      },
+      app,
+    );
 
     httpServer.listen(env.port);
+    httpsServer.listen(env.httpsPort);
 
     // eslint-disable-next-line no-console
     console.log(`> REST-API HTTP server started on :${env.port}`);
 
-    if (httpsServer) {
-      httpsServer.listen(env.httpsPort);
-
-      // eslint-disable-next-line no-console
-      console.log(`> REST-API HTTPS server started on :${env.httpsPort}`);
-    }
+    // eslint-disable-next-line no-console
+    console.log(`> REST-API HTTPS server started on :${env.httpsPort}`);
 
     return { app, httpServer, httpsServer };
   },
