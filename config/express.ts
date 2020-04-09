@@ -35,9 +35,15 @@ const limiter = rateLimit({
   max: 15,
 });
 
-const sslPrivateKey = fs.readFileSync(path.join(env.https.privateKey));
-const sslCertificate = fs.readFileSync(path.join(env.https.certificate));
-const sslChain = fs.readFileSync(path.join(env.https.chain));
+let sslPrivateKey: Buffer | null = null;
+let sslCertificate: Buffer | null = null;
+let sslChain: Buffer | null = null;
+
+if (env.nodeEnv === 'production') {
+  sslPrivateKey = fs.readFileSync(path.join(env.https.privateKey));
+  sslCertificate = fs.readFileSync(path.join(env.https.certificate));
+  sslChain = fs.readFileSync(path.join(env.https.chain));
+}
 
 // Parse body params and attach them to `req.body`
 app.use(bodyParser.json());
@@ -105,23 +111,28 @@ export default {
   init: (): { app: Express; httpServer: http.Server; httpsServer: https.Server | null } => {
     const httpServer = http.createServer(app);
 
-    const httpsServer = https.createServer(
-      {
-        key: sslPrivateKey,
-        cert: sslCertificate,
-        ca: sslChain,
-      },
-      app,
-    );
+    let httpsServer: https.Server | null = null;
+
+    if (env.nodeEnv === 'production' && sslPrivateKey && sslCertificate && sslChain) {
+      httpsServer = https.createServer(
+        {
+          key: sslPrivateKey,
+          cert: sslCertificate,
+          ca: sslChain,
+        },
+        app,
+      );
+
+      httpsServer.listen(env.httpsPort);
+
+      // eslint-disable-next-line no-console
+      console.log(`> REST-API HTTPS server started on :${env.httpsPort}`);
+    }
 
     httpServer.listen(env.port);
-    httpsServer.listen(env.httpsPort);
 
     // eslint-disable-next-line no-console
     console.log(`> REST-API HTTP server started on :${env.port}`);
-
-    // eslint-disable-next-line no-console
-    console.log(`> REST-API HTTPS server started on :${env.httpsPort}`);
 
     return { app, httpServer, httpsServer };
   },
