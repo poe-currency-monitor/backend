@@ -4,7 +4,8 @@ import fetch from 'node-fetch';
 import { User } from '@interfaces/express.interfaces';
 
 export async function load(req: Request, res: Response, next: NextFunction): Promise<void> {
-  const { accountName, poesessid } = req.params;
+  const { accountName } = req.params;
+  const { poesessid } = req.query;
 
   res.locals.user = { accountName, poesessid } as User;
 
