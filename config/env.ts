@@ -14,6 +14,11 @@ const envSchema = joi
       .number()
       .port()
       .default(4000),
+
+    API_HTTPS_PORT: joi
+      .number()
+      .port()
+      .default(8443),
   })
   .unknown()
   .required();
@@ -27,6 +32,7 @@ if (error && process.env.NODE_ENV !== 'test') {
 export default {
   nodeEnv: value.NODE_ENV as string,
   port: value.API_PORT as number,
+  httpsPort: value.API_HTTPS_PORT as number,
 
   secrets: {
     jwt: value.JWT_SECRET as string,

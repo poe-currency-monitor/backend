@@ -3,7 +3,10 @@
     @typescript-eslint/no-unused-vars: "off",
     @typescript-eslint/no-explicit-any: "off"
 */
-import { Server } from 'http';
+import fs from 'fs';
+import path from 'path';
+import http from 'http';
+import https from 'https';
 import express, { NextFunction, Request, Response, Express } from 'express';
 import expressJwt from 'express-jwt';
 import rateLimit from 'express-rate-limit';
@@ -31,6 +34,19 @@ const limiter = rateLimit({
   windowMs: 1000 * 60,
   max: 15,
 });
+
+/**
+ * If has a `server.key` file, we can add HTTPS support.
+ */
+const hasSSLCerts = fs.existsSync(path.join(__dirname, '../sslcerts/server.key'));
+
+let sslKey: string | null = null;
+let sslCert: string | null = null;
+
+if (hasSSLCerts) {
+  sslKey = fs.readFileSync(path.join(__dirname, '../sslcerts/server.key'), 'utf-8');
+  sslCert = fs.readFileSync(path.join(__dirname, '../sslcerts/server.crt'), 'utf-8');
+}
 
 // Parse body params and attach them to `req.body`
 app.use(bodyParser.json());
@@ -93,17 +109,35 @@ app.use((err: APIError, req: Request, res: Response, next: NextFunction) => {
 
 export default {
   /**
-   * Make the express app listen for connections.
+   * Create HTTP and HTTPS (optional) servers with Express app instance.
    */
-  init: (): { app: Express; server: Server } => {
-    const server = app.listen(env.port, () =>
-      // eslint-disable-next-line no-console
-      console.log(`> REST-API server started on :${env.port}`),
-    );
+  init: (): { app: Express; httpServer: http.Server; httpsServer: https.Server | null } => {
+    const httpServer = http.createServer(app);
 
-    return {
-      app,
-      server,
-    };
+    let httpsServer: https.Server | null = null;
+
+    if (hasSSLCerts && sslCert && sslKey) {
+      httpsServer = https.createServer(
+        {
+          key: sslKey,
+          cert: sslCert,
+        },
+        app,
+      );
+    }
+
+    httpServer.listen(env.port);
+
+    // eslint-disable-next-line no-console
+    console.log(`> REST-API HTTP server started on :${env.port}`);
+
+    if (httpsServer) {
+      httpsServer.listen(env.httpsPort);
+
+      // eslint-disable-next-line no-console
+      console.log(`> REST-API HTTPS server started on :${env.httpsPort}`);
+    }
+
+    return { app, httpServer, httpsServer };
   },
 };
