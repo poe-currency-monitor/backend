@@ -45,7 +45,7 @@ export default (req: Request, res: Response): Promise<void> => {
           );
         }
 
-        res.json({ token });
+        res.json({ token, accountName });
       } else {
         res.status(400).json({ error: 'Invalid POESESSID' });
       }
