@@ -4,7 +4,6 @@ import jwt from 'jsonwebtoken';
 import fetch from 'node-fetch';
 
 import env from '@config/env';
-import SQLite from '@config/sqlite';
 
 const jwtSignOptions: jwt.SignOptions = {
   expiresIn: '7d',
@@ -32,18 +31,7 @@ export default (req: Request, res: Response): Promise<void> => {
 
       if (accountNameMatches && accountNameMatches[1]) {
         const accountName = accountNameMatches[1];
-        const db = await new SQLite().open();
         const token = jwt.sign({ id: uuid() }, env.secrets.jwt, jwtSignOptions);
-
-        const user = await db.get(`SELECT account_name FROM users WHERE account_name = '${accountName}'`);
-
-        if (!user) {
-          await db.exec(`INSERT INTO users VALUES ('${accountName}', '${token}', '${poesessid}');`);
-        } else {
-          await db.exec(
-            `UPDATE users SET jwt = '${token}', poesessid = '${poesessid}' WHERE account_name = '${accountName}';`,
-          );
-        }
 
         res.json({ token, accountName });
       } else {

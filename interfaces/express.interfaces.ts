@@ -8,8 +8,10 @@ export interface APIError {
   stack?: string;
 }
 
+/**
+ * Express local response object (set with `load()` controller).
+ */
 export interface User {
-  account_name: string;
-  jwt: string;
+  accountName: string;
   poesessid: string;
 }
