@@ -23,6 +23,15 @@ import env from './env';
 const app = express();
 
 /**
+ * List of website to whitelist for CORS.
+ */
+const corsWhitelist: string[] = ['https://www.poe.totominc.io', 'https://poe.totominc.io'];
+
+if (env.nodeEnv !== 'production') {
+  corsWhitelist.push('http://localhost:3000');
+}
+
+/**
  * Array of unprotected paths that doesn't require a JWT auth.
  */
 const unprotectedPaths: string[] = ['/api/heartbeat', '/api/auth/'];
@@ -53,7 +62,17 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(helmet());
 
 // Enable CORS (Cross Origin Resource Sharing)
-app.use(cors());
+app.use(
+  cors({
+    origin: (origin, cb) => {
+      if (origin && corsWhitelist.indexOf(origin) !== -1) {
+        cb(null, true);
+      } else {
+        cb(new Error('Not allowed due to CORS restrictions'));
+      }
+    },
+  }),
+);
 
 // Enable JWT protection but add exceptions on some paths
 app.use(expressJwt({ secret: env.secrets.jwt }).unless({ path: unprotectedPaths }));
