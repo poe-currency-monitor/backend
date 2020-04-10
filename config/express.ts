@@ -65,7 +65,7 @@ app.use(helmet());
 app.use(
   cors({
     origin: (origin, cb) => {
-      if (origin && corsWhitelist.indexOf(origin) !== -1) {
+      if (env.nodeEnv !== 'production' || (origin && corsWhitelist.indexOf(origin) !== -1)) {
         cb(null, true);
       } else {
         cb(new Error('Not allowed due to CORS restrictions'));
