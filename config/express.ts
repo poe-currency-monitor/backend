@@ -25,7 +25,7 @@ const app = express();
 /**
  * List of website to whitelist for CORS.
  */
-const corsWhitelist: string[] = ['https://www.poe.totominc.io', 'https://poe.totominc.io'];
+const corsWhitelist: string[] = ['https://poe.totominc.io/', 'https://poe.totominc.io'];
 
 if (env.nodeEnv !== 'production') {
   corsWhitelist.push('http://localhost:3000');
