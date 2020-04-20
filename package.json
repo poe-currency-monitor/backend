@@ -38,7 +38,7 @@
     "sqlite": "^4.0.4",
     "sqlite3": "^4.1.1",
     "typescript": "^3.8.3",
-    "uuid": "^7.0.2"
+    "uuid": "^7.0.3"
   },
   "devDependencies": {
     "@totominc/eslint-config-typescript": "0.1.5",
