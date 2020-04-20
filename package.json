@@ -68,7 +68,7 @@
     "eslint-plugin-eslint-comments": "^3.1.2",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-prettier": "^3.1.2",
-    "nodemon": "^2.0.2",
+    "nodemon": "^2.0.3",
     "prettier": "^1.19.1",
     "ts-node": "^8.8.1",
     "tsconfig-paths": "^3.9.0"
