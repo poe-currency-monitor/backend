@@ -3249,10 +3249,10 @@ sqlite3@^4.1.1:
     node-pre-gyp "^0.11.0"
     request "^2.87.0"
 
-sqlite@^4.0.4:
-  version "4.0.4"
-  resolved "https://registry.yarnpkg.com/sqlite/-/sqlite-4.0.4.tgz#b6248d387b562578171e8ca04e73f013e4d58816"
-  integrity sha512-W+eUbenjBYM1OIcQzlu5+JuTcrxeqSyRF2K63h74Jw9K0M3w1fiYX6jaY5zEVJr5oZ4cnU9i+bYxKkzAWdoUFQ==
+sqlite@^4.0.7:
+  version "4.0.7"
+  resolved "https://registry.yarnpkg.com/sqlite/-/sqlite-4.0.7.tgz#45d9843cf8daff07eaa2446e936583c687981ffb"
+  integrity sha512-1bBO+me3gXRfqwRR3K9aNDoSbTkQ87o6fSjj/BE2gSHHsK3qIDR+LoFZHgZ6kSPdFBoLTsy5/w/+8PBBaK+lvg==
 
 sshpk@^1.7.0:
   version "1.16.1"
