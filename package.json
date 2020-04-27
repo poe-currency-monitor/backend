@@ -48,7 +48,7 @@
     "@types/express-jwt": "^0.0.42",
     "@types/express-rate-limit": "^5.0.0",
     "@types/hapi__joi": "^16.0.12",
-    "@types/helmet": "^0.0.45",
+    "@types/helmet": "^0.0.46",
     "@types/jsonwebtoken": "^8.3.9",
     "@types/mkdirp": "^1.0.0",
     "@types/module-alias": "^2.0.0",
