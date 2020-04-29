@@ -10,7 +10,7 @@ To get the server running locally:
 - Clone the repo.
 - `yarn` to install all the dependencies.
 - Copy `.env.example` file as `.env` and edit the environment variables.
-- `yarn run dev` to run the server locally.
+- `yarn dev` to run the server locally.
 
 ## Overview
 
@@ -28,16 +28,18 @@ To get the server running locally:
 - uuid: generate RFC4122 (v1, v4, and v5) UUIDs
 - dotenv: load environment variables from a `.env` file
 - module-aliases: create aliases of directories and register custom module paths (used for TypeScript custom paths)
+- sqlite3: small, fast, salf-contained SQL database with Node bindings
 
 ### Structure
 
-- `.env.example` an example of environment variables that are used in this template.
+- `.env.example` an example of environment variables that are used.
 - `index.ts` entry point of the application.
 - `build/` scripts used for deployment.
 - `config/` various configuration files (express and environment variables).
 - `interfaces/` contains various TypeScript interfaces.
 - `server/` contains a folder for every route, this is the main Express logic for all of your routes.
 - `types/` override specific modules `*.d.ts.` typings.
+- `scripts/` various bash scripts.
 
 ### Commands
 
@@ -63,6 +65,49 @@ If in development, the returned error (as a JSON response) will show the stacktr
 Linting is done with ESLint and formatting with Prettier.
 
 There are already a set of ESLint rules which includes TypeScript best-practices, the `.eslintrc.js` extends the [`@totominc/eslint-config-typescript`](https://www.npmjs.com/package/@totominc/eslint-config-typescript) configuration.
+
+## Deployment
+
+Deployment have been tested on Ubuntu 18.04 LTS, using `systemd`.
+
+### Setup environment
+
+1. Create a `node` user to run the process and switch to that user.
+2. Install [`nvm`](https://github.com/nvm-sh/nvm) with latest v12 LTS.
+3. Install [`yarn`](https://classic.yarnpkg.com/en/docs/install/#debian-stable).
+4. Clone the repository, run `yarn` and `yarn build`.
+5. Make sure to setup SSL and edit their path in the `.env` file.
+
+### Setup process
+
+1. Create a process configuration file `/etc/systemd/system/poecurrencymonitor.service` containing the following:
+
+   ```
+   [Unit]
+   Description=PoE Currency Monitor - poecurrencymonitor.cf
+
+   [Service]
+   EnvironmentFile=-/etc/default/poecurrencymonitor
+   ExecStart=/home/node/poe-currency-monitor-backend/scripts/start.sh
+   WorkingDirectory=/home/node/poe-currency-monitor-backend
+   LimitNOFILE=4096
+   IgnoreSIGPIPE=false
+   KillMode=process
+   User=node
+
+   [Install]
+   WantedBy=multi-user.target
+   ```
+
+2. Create an environment file `/etc/default/poecurrencymonitor` containing the following:
+
+   ```
+   NODE_ENV=production
+   ```
+
+3. Enable the process on startup `systemctl enable poecurrencymonitor`
+4. Start the process `systemctl start poecurrencymonitor`
+5. Verify everything is working well `systemctl status poecurrencymonitor`
 
 ## License
 
