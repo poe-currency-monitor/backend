@@ -127,3 +127,7 @@ All the endpoints are protected excepted the 2 routes below:
 
 - `/api/poe-ninja/currency-rates/?league&language&type`: retrieve currency-rates of specific currency type for specified league.
 - `/api/poe-ninja/item-rates/?league&language&type`: retrieve items-rates of specific item type for specified league.
+
+## License
+
+Project licensed under GPL v3, please see the LICENSE file.
