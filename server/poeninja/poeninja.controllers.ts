@@ -5,7 +5,7 @@ import fetch from 'node-fetch';
 import { Currency, Item } from '@interfaces/poeninja.interfaces';
 
 /**
- * Fetch currency-rates from a `/currencyoverview` poe.ninja endpoint, this
+ * Fetch currency-rates from the `/currencyoverview` poe.ninja endpoint, this
  * includes currency and fragments.
  *
  * @param req Express request.
@@ -35,7 +35,8 @@ export async function getCurrencyRates(req: Request, res: Response): Promise<voi
 }
 
 /**
- * Fetch currency-rates from a `/itemoverview` poe.ninja endpoint.
+ * Fetch item-rates from the `/itemoverview` poe.ninja endpoint, this endpoint
+ * includes maps, scarabs, prophecies, unique items, ...
  *
  * @param req Express request.
  * @param res Express response.
@@ -45,7 +46,7 @@ export async function getItemRates(req: Request, res: Response): Promise<void> {
   const language = req.query.language as string;
   const type = req.query.type as string;
 
-  return fetch(`https://poe.ninja/api/data/currencyoverview?league=${league}&type=${type}&language=${language}`, {
+  return fetch(`https://poe.ninja/api/data/itemoverview?league=${league}&type=${type}&language=${language}`, {
     method: 'get',
   })
     .then((response) => response.json().then((json: Item.Response) => ({ response, json })))

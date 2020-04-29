@@ -33,7 +33,7 @@ export const itemQueryParameters = {
         'Prophecy',
         'SkillGem',
         'UniqueMap',
-        'Maps',
+        'Map',
         'UniqueJewel',
         'UniqueFlask',
         'Beast',
