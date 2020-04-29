@@ -36,6 +36,8 @@ module.exports = {
         vueIndentScriptAndStyle: false,
       },
     ],
+
+    '@typescript-eslint/no-namespace': ['off'],
   },
 
   overrides: [
