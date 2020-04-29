@@ -28,7 +28,6 @@ To get the server running locally:
 - uuid: generate RFC4122 (v1, v4, and v5) UUIDs
 - dotenv: load environment variables from a `.env` file
 - module-aliases: create aliases of directories and register custom module paths (used for TypeScript custom paths)
-- sqlite3: small, fast, salf-contained SQL database with Node bindings
 
 ### Structure
 

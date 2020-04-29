@@ -35,8 +35,6 @@
     "mongoose": "^5.9.10",
     "morgan": "^1.10.0",
     "node-fetch": "^2.6.0",
-    "sqlite": "^4.0.7",
-    "sqlite3": "^4.2.0",
     "typescript": "^3.8.3",
     "uuid": "^7.0.3"
   },
@@ -56,7 +54,6 @@
     "@types/morgan": "^1.9.0",
     "@types/node": "^13.13.4",
     "@types/node-fetch": "^2.5.7",
-    "@types/sqlite3": "^3.1.6",
     "@types/uuid": "^7.0.3",
     "@typescript-eslint/eslint-plugin": "^2.30.0",
     "@typescript-eslint/parser": "^2.30.0",

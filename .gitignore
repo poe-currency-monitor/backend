@@ -12,6 +12,5 @@ dist
 # Testing related
 coverage
 
-## Temporary files such as SQLite database
+## Temporary files
 tmp
-sqlite.db
