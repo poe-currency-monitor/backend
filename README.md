@@ -6,7 +6,6 @@
 
 To get the server running locally:
 
-- Install and setup a local MongoDB server.
 - Clone the repo.
 - `yarn` to install all the dependencies.
 - Copy `.env.example` file as `.env` and edit the environment variables.
@@ -67,7 +66,7 @@ There are already a set of ESLint rules which includes TypeScript best-practices
 
 ## Deployment
 
-Deployment have been tested on Ubuntu 18.04 LTS, using `systemd`.
+Deployment have been tested on Ubuntu 18.04 LTS, using `systemd`. Please, do not use [`pm2`](https://pm2.keymetrics.io/) as there are some issues when accessing _root_ files such as SSL keys.
 
 ### Setup environment
 
@@ -104,9 +103,30 @@ Deployment have been tested on Ubuntu 18.04 LTS, using `systemd`.
    NODE_ENV=production
    ```
 
-3. Enable the process on startup `systemctl enable poecurrencymonitor`
-4. Start the process `systemctl start poecurrencymonitor`
-5. Verify everything is working well `systemctl status poecurrencymonitor`
+3. Make the `scripts/start.sh` script executable with `chmod +x ./scripts/start.sh`
+4. Enable the process on startup `systemctl enable poecurrencymonitor`
+5. Start the process `systemctl start poecurrencymonitor`
+6. Verify everything is working well `systemctl status poecurrencymonitor --l --no-pager`
+
+## Endpoints
+
+### Unprotected endpoints
+
+All the endpoints are protected excepted the 2 routes below:
+
+- `/api/heartbeat/`: unprotected, check if API is up.
+- `/api/login/`: unprotected, used to login and generate a client JWT.
+
+### PoE-related endpoints
+
+- `/api/poe/:accountName/characters/?poesessid`: retrieve a list of character for the specified account-name.
+- `/api/poe/:accountName/stash-tabs/?poesessid&league&realm`: retrieve all stash-tabs for the specified account-name.
+- `/api/poe/:accountName/stash-items/?poesessid&league&realm&tabIndex`: retrieve all items of specific stash-tabs for the specified account-name.
+
+### poe.ninja-related endpoints
+
+- `/api/poe-ninja/currency-rates/?league&language&type`: retrieve currency-rates of specific currency type for specified league.
+- `/api/poe-ninja/item-rates/?league&language&type`: retrieve items-rates of specific item type for specified league.
 
 ## License
 
