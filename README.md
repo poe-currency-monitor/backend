@@ -108,6 +108,13 @@ Deployment have been tested on Ubuntu 18.04 LTS, using `systemd`. Please, do not
 5. Start the process `systemctl start poecurrencymonitor`
 6. Verify everything is working well `systemctl status poecurrencymonitor --l --no-pager`
 
+### Restarting the API
+
+1. Pull changes from remote, `yarn` and `yarn build`
+2. Find process PID with `lsof -i -p 4243`
+3. Kill process `kill <PID>`
+4. Restart process `systemctl restart poecurrencymonitor`
+
 ## Endpoints
 
 ### Unprotected endpoints
