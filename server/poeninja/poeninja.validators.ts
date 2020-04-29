@@ -6,7 +6,10 @@ export const currencyQueryParameters = {
   [Segments.QUERY]: joi.object().keys({
     league: joi.string().required(),
     language: joi.string().required(),
-    type: joi.string().valid('Currency', 'Fragment'),
+    type: joi
+      .string()
+      .required()
+      .valid('Currency', 'Fragment'),
   }),
 };
 
@@ -16,6 +19,7 @@ export const itemQueryParameters = {
     language: joi.string().required(),
     type: joi
       .string()
+      .required()
       .valid(
         'DeliriumOrb',
         'Watchstone',
