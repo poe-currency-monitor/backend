@@ -41,7 +41,7 @@ const unprotectedPaths: string[] = ['/api/heartbeat', '/api/auth/'];
  */
 const limiter = rateLimit({
   windowMs: 1000 * 60,
-  max: 15,
+  max: 30,
 });
 
 let sslPrivateKey: Buffer | null = null;
