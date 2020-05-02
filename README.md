@@ -86,12 +86,13 @@ Deployment have been tested on Ubuntu 18.04 LTS, using `systemd`. Please, do not
 
    [Service]
    EnvironmentFile=-/etc/default/poecurrencymonitor
-   ExecStart=/home/node/poe-currency-monitor-backend/scripts/start.sh
+   ExecStart=/home/node/.nvm/versions/node/v12.16.3/bin/node /home/node/poe-currency-monitor-backend/dist/index.js
    WorkingDirectory=/home/node/poe-currency-monitor-backend
    LimitNOFILE=4096
    IgnoreSIGPIPE=false
    KillMode=process
    User=node
+   SyslogIdentifier=poecurrencymonitor-node
 
    [Install]
    WantedBy=multi-user.target
@@ -103,17 +104,15 @@ Deployment have been tested on Ubuntu 18.04 LTS, using `systemd`. Please, do not
    NODE_ENV=production
    ```
 
-3. Make the `scripts/start.sh` script executable with `chmod +x ./scripts/start.sh`
+3. Make the all the scripts executable with `chmod +x ./scripts/*.sh`
 4. Enable the process on startup `systemctl enable poecurrencymonitor`
 5. Start the process `systemctl start poecurrencymonitor`
 6. Verify everything is working well `systemctl status poecurrencymonitor --l --no-pager`
+   - You can also use `lsof -i -p <API-PORT>` to verify the Node process is actually listening on the specified port
 
 ### Restarting the API
 
-1. Pull changes from remote, `yarn` and `yarn build`
-2. Find process PID with `lsof -i -p 4243`
-3. Kill process `kill <PID>`
-4. Restart process `systemctl restart poecurrencymonitor`
+- Run `scripts/update.sh` to automatically pull changes, install dependencies, build from source and restart `systemctl` process.
 
 ## Endpoints
 
