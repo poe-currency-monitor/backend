@@ -32,7 +32,7 @@
     "jsonwebtoken": "^8.5.1",
     "mkdirp": "^1.0.4",
     "module-alias": "^2.2.2",
-    "mongoose": "^5.9.12",
+    "mongoose": "^5.9.13",
     "morgan": "^1.10.0",
     "node-fetch": "^2.6.0",
     "typescript": "^3.8.3",
