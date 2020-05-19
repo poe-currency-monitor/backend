@@ -8,24 +8,17 @@ const envSchema = joi
   .object({
     NODE_ENV: joi.string().default('development'),
 
-    JWT_SECRET: joi.string().required(),
+    JWT_SECRET: joi.string(),
 
-    API_PORT: joi
-      .number()
-      .port()
-      .default(4000),
+    API_PORT: joi.number().port(),
 
-    API_HTTPS_PORT: joi
-      .number()
-      .port()
-      .default(8443),
+    API_HTTPS_PORT: joi.number().port(),
 
-    PRIVATE_KEY_PATH: joi.string().required(),
-    CERTIFICATE_PATH: joi.string().required(),
-    CHAIN_PATH: joi.string().required(),
+    PRIVATE_KEY_PATH: joi.string(),
+    CERTIFICATE_PATH: joi.string(),
+    CHAIN_PATH: joi.string(),
   })
-  .unknown()
-  .required();
+  .unknown();
 
 const { error, value } = envSchema.validate(process.env);
 
