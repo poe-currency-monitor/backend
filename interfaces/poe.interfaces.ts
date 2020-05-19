@@ -1,3 +1,13 @@
+export interface POECharacter {
+  name: string;
+  league: string;
+  classId: number;
+  ascendencyClass: number;
+  class: string;
+  level: number;
+  experience: number;
+}
+
 export interface POETab {
   n: string;
   i: number;
@@ -30,13 +40,38 @@ export interface POEItem {
   typeLine: string;
   identified: boolean;
   ilvl: number;
-  descText: string;
+  descrText: string;
   frameType: number;
-  stackSize: number;
-  maxStackSize: number;
+  stackSize?: number;
+  maxStackSize?: number;
   inventoryId: string;
   explicitMods?: string[];
   flavourText?: string[];
+  properties?: {
+    displayMode: number;
+    name: string;
+    values: (string | number)[][];
+    type?: number;
+  }[];
+}
+
+export interface POEIncome {
+  chaos: number;
+  exalt: number;
+  unit: number;
+}
+
+export interface POEItemIncome {
+  item: POEItem;
+  income: POEIncome;
+}
+
+export interface POEIncomeHistory {
+  id: string;
+  income: POEIncome;
+  items: POEItemIncome[];
+  tabId: string;
+  date: Date;
 }
 
 export interface POEStashTabItemsResponse {
