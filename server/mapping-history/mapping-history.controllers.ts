@@ -8,7 +8,7 @@ export async function create(req: Request, res: Response): Promise<void> {
   const { accountname, character, league, created, history } = req.body as MappingHistoryPayload;
 
   try {
-    const id = `${accountname}-${character}_${uuidv4()}`;
+    const id = uuidv4();
 
     const documentPayload = {
       id,
