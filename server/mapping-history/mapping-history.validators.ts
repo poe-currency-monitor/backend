@@ -68,6 +68,7 @@ const historySchema = joi.object().keys({
 
 export const createHistory = {
   [Segments.BODY]: joi.object().keys({
+    poesessid: joi.string().required(),
     accountname: joi.string().required(),
     character: joi.string().required(),
     league: joi.string().required(),
@@ -94,5 +95,6 @@ export const getHistory = {
 export const getAllHistoriesPerAccountName = {
   [Segments.QUERY]: joi.object().keys({
     accountName: joi.string().required(),
+    poesessid: joi.string().required(),
   }),
 };
