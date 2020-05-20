@@ -11,8 +11,9 @@ const envSchema = joi
     JWT_SECRET: joi.string(),
 
     API_PORT: joi.number().port(),
-
     API_HTTPS_PORT: joi.number().port(),
+
+    MONGO_URI: joi.string().uri(),
 
     PRIVATE_KEY_PATH: joi.string(),
     CERTIFICATE_PATH: joi.string(),
@@ -39,5 +40,9 @@ export default {
 
   secrets: {
     jwt: value.JWT_SECRET as string,
+  },
+
+  mongo: {
+    uri: value.MONGO_URI as string,
   },
 };
