@@ -2,23 +2,37 @@ import { Schema, model } from 'mongoose';
 
 import { MappingHistoryDocument } from '@interfaces/mapping-history.interfaces';
 
-export const MappingHistorySchema = new Schema({
-  accountname: Schema.Types.String,
+export const MappingHistorySchema = new Schema(
+  {
+    id: Schema.Types.String,
+    accountname: Schema.Types.String,
+    character: Schema.Types.String,
+    league: Schema.Types.String,
 
-  date: {
-    type: Schema.Types.Date,
-    default: Date.now,
-  },
-
-  history: [
-    {
-      id: Schema.Types.String,
-      tabId: Schema.Types.String,
-      date: Schema.Types.Date,
-      income: [Schema.Types.Mixed],
-      items: [Schema.Types.Mixed],
+    created: {
+      type: Schema.Types.String,
+      default: new Date().toISOString(),
     },
-  ],
-});
+
+    history: [
+      {
+        id: Schema.Types.String,
+        tabId: Schema.Types.String,
+        date: Schema.Types.String,
+        items: [Schema.Types.Mixed],
+        income: {
+          chaos: Schema.Types.Number,
+          exalt: Schema.Types.Number,
+          unit: Schema.Types.Number,
+        },
+      },
+    ],
+  },
+  {
+    _id: false,
+    id: false,
+    versionKey: false,
+  },
+);
 
 export const MappingHistoryModel = model<MappingHistoryDocument>('MappingHistory', MappingHistorySchema);
