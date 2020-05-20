@@ -75,27 +75,24 @@ Deployment have been tested on Ubuntu 18.04 LTS, using `systemd`. Please, do not
    - `sudo adduser node`
    - `su - node`
 
-2. Install `build-essential` package to have the necessary tools to compile some node_modules from source:
+2. Install [`build-essential`](https://packages.ubuntu.com/bionic/build-essential), [`mongodb`](https://www.mongodb.com/) and [`nginx`](https://www.nginx.com/):
 
-   - `sudo apt install build-essential -y`
+   - `sudo apt install build-essential mongodb nginx -y`
 
-3. Install [`nginx`](https://www.nginx.com/), we will use it as a reverse proxy:
-
-   - `sudo apt install nginx -y`
-
-4. Install [`nvm`](https://github.com/nvm-sh/nvm#installing-and-updating) with latest v12 LTS:
+3. Install [`nvm`](https://github.com/nvm-sh/nvm#installing-and-updating) with latest v12 LTS:
 
    - `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash`
    - `nvm install --lts`
 
-5. Install [`yarn`](https://classic.yarnpkg.com/en/docs/install/#debian-stable):
+4. Install [`yarn`](https://classic.yarnpkg.com/en/docs/install/#debian-stable):
 
    - `curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -`
    - `echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list`
    - `sudo apt update && sudo apt install yarn`
 
-6. Clone the repository, run `yarn && yarn build`.
-7. Make sure to setup SSL and edit their path in the `.env` file.
+5. Clone the repository, run `yarn && yarn build`.
+
+6. Make sure to setup SSL and edit their path in the `.env` file.
 
 ### Setup Node process
 
