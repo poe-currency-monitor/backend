@@ -8,14 +8,17 @@ const historyItemSchema = joi
       chaos: joi
         .number()
         .positive()
+        .allow(0)
         .required(),
       exalt: joi
         .number()
         .positive()
+        .allow(0)
         .required(),
       unit: joi
         .number()
         .positive()
+        .allow(0)
         .required(),
     }),
 
@@ -41,10 +44,12 @@ const historySchema = joi.object().keys({
       chaos: joi
         .number()
         .positive()
+        .allow(0)
         .required(),
       exalt: joi
         .number()
         .positive()
+        .allow(0)
         .required(),
       unit: joi
         .number()
