@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 
-import { MappingHistoryPayload, MappingHistoryGetQuery } from '@interfaces/mapping-history.interfaces';
+import { MappingHistoryPayload } from '@interfaces/mapping-history.interfaces';
 import { MappingHistoryModel } from './mapping-history.models';
 
 export async function create(req: Request, res: Response): Promise<void> {
