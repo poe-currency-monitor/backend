@@ -19,7 +19,16 @@ export const MappingHistorySchema = new Schema(
         id: Schema.Types.String,
         tabId: Schema.Types.String,
         date: Schema.Types.String,
-        items: [Schema.Types.Mixed],
+        items: [
+          {
+            item: Schema.Types.Mixed,
+            income: {
+              chaos: Schema.Types.Number,
+              exalt: Schema.Types.Number,
+              unit: Schema.Types.Number,
+            },
+          },
+        ],
         income: {
           chaos: Schema.Types.Number,
           exalt: Schema.Types.Number,

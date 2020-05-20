@@ -10,7 +10,7 @@ export interface MappingHistoryPayload {
   history: {
     id: string;
     income: POEIncome;
-    items: POEItemIncome;
+    items: POEItemIncome[];
     tabId: string;
     date: string;
   }[];
