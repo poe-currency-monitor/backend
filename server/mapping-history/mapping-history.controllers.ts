@@ -50,3 +50,21 @@ export async function get(req: Request, res: Response): Promise<void> {
     res.sendStatus(500);
   }
 }
+
+export async function getAllPerAccountName(req: Request, res: Response): Promise<void> {
+  const accountname = req.query.accountName as string;
+
+  try {
+    const mappingHistoriesDocuments = await MappingHistoryModel.find({ accountname })
+      .lean()
+      .exec();
+
+    if (mappingHistoriesDocuments.length > 0) {
+      res.status(200).json(JSON.stringify(mappingHistoriesDocuments));
+    } else {
+      res.sendStatus(404);
+    }
+  } catch (error) {
+    res.sendStatus(500);
+  }
+}
