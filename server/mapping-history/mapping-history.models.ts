@@ -16,10 +16,21 @@ export const MappingHistorySchema = new Schema(
 
     history: [
       {
+        _id: false,
         id: Schema.Types.String,
         tabId: Schema.Types.String,
         date: Schema.Types.String,
-        items: [Schema.Types.Mixed],
+        items: [
+          {
+            _id: false,
+            item: Schema.Types.Mixed,
+            income: {
+              chaos: Schema.Types.Number,
+              exalt: Schema.Types.Number,
+              unit: Schema.Types.Number,
+            },
+          },
+        ],
         income: {
           chaos: Schema.Types.Number,
           exalt: Schema.Types.Number,
@@ -30,7 +41,6 @@ export const MappingHistorySchema = new Schema(
   },
   {
     _id: false,
-    id: false,
     versionKey: false,
   },
 );
