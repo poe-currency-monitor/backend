@@ -129,12 +129,12 @@ export async function getAllPerAccountName(req: Request, res: Response): Promise
   }
 
   try {
-    const mappingHistoriesDocuments = await MappingHistoryModel.find({ accountname })
-      .lean()
-      .exec();
+    const mappingHistoriesDocuments = await MappingHistoryModel.find({ accountname }).exec();
 
     if (mappingHistoriesDocuments.length > 0) {
-      res.status(200).json(JSON.stringify(mappingHistoriesDocuments));
+      const mappingHistoriesJSON = mappingHistoriesDocuments.map((mappingHistory) => mappingHistory.toJSON());
+
+      res.status(200).json(mappingHistoriesJSON);
     } else {
       res.sendStatus(404);
     }
