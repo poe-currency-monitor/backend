@@ -35,7 +35,7 @@
     "mongoose": "^5.9.15",
     "morgan": "^1.10.0",
     "node-fetch": "^2.6.0",
-    "typescript": "^3.9.2",
+    "typescript": "^3.9.3",
     "uuid": "^8.0.0"
   },
   "devDependencies": {
