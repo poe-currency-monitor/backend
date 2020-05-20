@@ -1,20 +1,27 @@
 #!/bin/bash
-echo -e "\e[1m\e[36m[poe-currency-monitor-tool] \e[0mUpdating poe-currency-monitor-backend..."
+. ./read-json.sh
+
+PREFIX="\e[1m\e[36m[$PACKAGE_NAME update-tool]\e[0m";
+
+PACKAGE_NAME=`readJSON ../package.json name` || exit 1;
+PROCESS_NAME="poecurrencymonitor";
+
+echo "$PREFIX Updating project..."
 
 # Create git up alias because it's harmful to use git pull to update a repo,
 # this will add noise to git log in case of branch merging.
 # https://stackoverflow.com/a/17101140
 git config --global alias.up '!git remote update -p; git merge --ff-only @{u}'
 
-echo -e "\e[1m\e[36m[poe-currency-monitor-tool] \e[0mUpdating local repository from remote..."
+echo "$PREFIX Updating local repository from remote on master branch..."
 git checkout master && git up
 
-echo -e "\e[1m\e[36m[poe-currency-monitor-tool] \e[0mRunning yarn to install dependencies and build..."
-yarn install --frozen-lockfile --silent
+echo "$PREFIX Running yarn to install dependencies and build from source files..."
+yarn install --frozen-lockfile
 yarn build
 
-echo -e "\e[1m\e[36m[poe-currency-monitor-tool] \e[0mRestarting systemd process..."
-systemctl restart poecurrencymonitor
-systemctl status poecurrencymonitor
+echo "$PREFIX Restarting $PROCESS_NAME process..."
+systemctl restart $PROCESS_NAME
+systemctl status $PROCESS_NAME
 
-echo -e "\e[1m\e[36m[poe-currency-monitor-tool] \e[0mSuccessfully restarted poecurrencymonitor backend!"
+echo "$PREFIX Done!"
