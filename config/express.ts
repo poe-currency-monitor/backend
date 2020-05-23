@@ -34,7 +34,7 @@ if (env.nodeEnv !== 'production') {
 /**
  * Array of unprotected paths that doesn't require a JWT auth.
  */
-const unprotectedPaths: string[] = ['/api/heartbeat', '/api/auth/', '/api/mapping-history/import/'];
+const unprotectedPaths: (string | RegExp)[] = ['/api/heartbeat', '/api/auth/', /^\/api\/mapping-history\/import\/.*/];
 
 /**
  * Options for `express-rate-limit`.
