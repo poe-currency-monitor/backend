@@ -7,7 +7,6 @@ export interface MappingHistoryPayload {
   accountname: string;
   character: string;
   league: string;
-  created: string;
   history: {
     id: string;
     income: POEIncome;

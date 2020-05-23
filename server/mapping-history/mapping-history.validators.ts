@@ -72,10 +72,6 @@ export const createHistory = {
     accountname: joi.string().required(),
     character: joi.string().required(),
     league: joi.string().required(),
-    created: joi
-      .string()
-      .isoDate()
-      .required(),
 
     history: joi
       .array()

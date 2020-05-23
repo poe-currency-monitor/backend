@@ -47,12 +47,24 @@ function authPOESESSID(poesessid: string, expectedAccountName: string): Promise<
  * @param res Express response
  */
 export async function create(req: Request, res: Response): Promise<void> {
-  const { poesessid, accountname, character, league, created, history } = req.body as MappingHistoryPayload;
+  const { poesessid, accountname, character, league, history } = req.body as MappingHistoryPayload;
 
   const isAuthorized = await authPOESESSID(poesessid, accountname);
 
   if (!isAuthorized) {
     res.sendStatus(401);
+
+    return;
+  }
+
+  const userMappingHistories = await MappingHistoryModel.find({ accountname, character, league });
+
+  const hasAlreadySameHistory = userMappingHistories
+    .filter((mappingHistory) => mappingHistory.history.length === history.length)
+    .find((mappingHistory) => mappingHistory.history.every((h, i) => history[i] && history[i].id === h.id));
+
+  if (hasAlreadySameHistory) {
+    res.sendStatus(409);
 
     return;
   }
@@ -65,15 +77,11 @@ export async function create(req: Request, res: Response): Promise<void> {
       accountname,
       character,
       league,
-      created,
       history,
+      created: new Date().toISOString(),
     };
 
-    const mappingHistoryDocument = await MappingHistoryModel.findOneAndUpdate(
-      { created },
-      { ...documentPayload },
-      { upsert: true, new: true, setDefaultsOnInsert: true },
-    ).exec();
+    const mappingHistoryDocument = await MappingHistoryModel.create({ ...documentPayload });
 
     if (mappingHistoryDocument) {
       res.status(200).json(mappingHistoryDocument.toJSON());
