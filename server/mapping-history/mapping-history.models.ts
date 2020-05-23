@@ -40,7 +40,6 @@ export const MappingHistorySchema = new Schema(
     ],
   },
   {
-    _id: false,
     versionKey: false,
   },
 );
