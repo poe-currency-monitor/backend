@@ -103,7 +103,7 @@ export async function create(req: Request, res: Response): Promise<void> {
  * @param res Express response
  */
 export async function get(req: Request, res: Response): Promise<void> {
-  const id = req.query.id as string;
+  const { id } = req.params;
 
   try {
     const mappingHistoryDocument = await MappingHistoryModel.findOne({ id }).exec();

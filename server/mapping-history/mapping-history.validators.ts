@@ -82,12 +82,6 @@ export const createHistory = {
   }),
 };
 
-export const getHistory = {
-  [Segments.QUERY]: joi.object().keys({
-    id: joi.string().required(),
-  }),
-};
-
 export const getAllHistoriesPerAccountName = {
   [Segments.QUERY]: joi.object().keys({
     accountName: joi.string().required(),
