@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import fetch from 'node-fetch';
 
-import { MappingHistoryPayload } from '@interfaces/mapping-history.interfaces';
+import { MappingHistoryPayload, MappingHistoryDocument } from '@interfaces/mapping-history.interfaces';
 import { MappingHistoryModel } from './mapping-history.models';
 
 /**
@@ -100,7 +100,7 @@ export async function get(req: Request, res: Response): Promise<void> {
     if (mappingHistoryDocument) {
       res.status(200).json(mappingHistoryDocument.toJSON());
     } else {
-      res.sendStatus(404);
+      res.status(200).json([]);
     }
   } catch (error) {
     res.sendStatus(500);
@@ -132,11 +132,13 @@ export async function getAllPerAccountName(req: Request, res: Response): Promise
     const mappingHistoriesDocuments = await MappingHistoryModel.find({ accountname }).exec();
 
     if (mappingHistoriesDocuments.length > 0) {
-      const mappingHistoriesJSON = mappingHistoriesDocuments.map((mappingHistory) => mappingHistory.toJSON());
+      const mappingHistoriesJSON: MappingHistoryDocument[] = mappingHistoriesDocuments.map((mappingHistory) =>
+        mappingHistory.toJSON(),
+      );
 
       res.status(200).json(mappingHistoriesJSON);
     } else {
-      res.sendStatus(404);
+      res.status(200).json([]);
     }
   } catch (error) {
     res.sendStatus(500);
