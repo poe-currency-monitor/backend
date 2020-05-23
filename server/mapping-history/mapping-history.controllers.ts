@@ -89,6 +89,9 @@ export async function create(req: Request, res: Response): Promise<void> {
       res.sendStatus(500);
     }
   } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(error);
+
     res.sendStatus(500);
   }
 }
@@ -111,6 +114,9 @@ export async function get(req: Request, res: Response): Promise<void> {
       res.status(200).json([]);
     }
   } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(error);
+
     res.sendStatus(500);
   }
 }
@@ -149,6 +155,9 @@ export async function getAllPerAccountName(req: Request, res: Response): Promise
       res.status(200).json([]);
     }
   } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(error);
+
     res.sendStatus(500);
   }
 }
