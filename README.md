@@ -98,7 +98,7 @@ Deployment have been tested on Ubuntu 18.04 LTS, using `systemd`. Please, do not
 
 1. Create a process configuration file `/etc/systemd/system/poecurrencymonitor.service` containing the following:
 
-   ```
+   ```systemd
    [Unit]
    Description=PoE Currency Monitor - Backend for the PoE Currency Monitor webapp. [poecurrencymonitor.cf]
 
