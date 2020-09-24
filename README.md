@@ -194,7 +194,7 @@ This Nginx configuration used will redirect all HTTP request to HTTPS. Also make
 All the endpoints are protected excepted the 2 routes below:
 
 - `/api/heartbeat/`: unprotected, check if API is up.
-- `/api/login/`: unprotected, used to login and generate a client JWT.
+- `/api/auth/`: unprotected, used to login and generate a client JWT.
 
 ### PoE-related endpoints
 
