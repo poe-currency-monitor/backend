@@ -2,13 +2,35 @@
 
 > Generated from the [Node Express REST-API template](https://github.com/TotomInc/node-express-mongo-rest-api).
 
+- [PoE Currency Monitor back-end](#poe-currency-monitor-back-end)
+  - [Getting started](#getting-started)
+  - [Overview](#overview)
+    - [Dependencies](#dependencies)
+    - [Structure](#structure)
+    - [Commands](#commands)
+    - [Error-handling](#error-handling)
+    - [Linting + formatting](#linting--formatting)
+  - [Deployment](#deployment)
+    - [Setup environment](#setup-environment)
+    - [SSL HTTPS with Certbot from LetsEncrypt](#ssl-https-with-certbot-from-letsencrypt)
+    - [Nginx and firewall configuration](#nginx-and-firewall-configuration)
+      - [UFW configuration](#ufw-configuration)
+      - [Nginx configuration](#nginx-configuration)
+    - [Setup Node process as systemd](#setup-node-process-as-systemd)
+    - [Updating the API](#updating-the-api)
+  - [Endpoints](#endpoints)
+    - [Unprotected endpoints](#unprotected-endpoints)
+    - [PoE-related endpoints](#poe-related-endpoints)
+    - [poe.ninja-related endpoints](#poeninja-related-endpoints)
+  - [License](#license)
+
 ## Getting started
 
 To get the server running locally:
 
 - Clone the repo.
 - `yarn` to install all the dependencies.
-- Copy `.env.example` file as `.env` and edit the environment variables.
+- `cp .env.example .env` and edit the environment variables.
 - `yarn dev` to run the server locally.
 
 ## Overview
@@ -70,63 +92,46 @@ Deployment have been tested on Ubuntu 18.04 LTS, using `systemd`. Please, do not
 
 ### Setup environment
 
-1. Create a `node` user to run the process and switch to that user:
-
-   - `sudo adduser node`
-   - `su - node`
-
-2. Install [`build-essential`](https://packages.ubuntu.com/bionic/build-essential), [`mongodb`](https://www.mongodb.com/) and [`nginx`](https://www.nginx.com/):
+1. Install [`build-essential`](https://packages.ubuntu.com/bionic/build-essential), [`mongodb`](https://www.mongodb.com/) and [`nginx`](https://www.nginx.com/):
 
    - `sudo apt install build-essential mongodb nginx -y`
 
-3. Install [`nvm`](https://github.com/nvm-sh/nvm#installing-and-updating) with latest v12 LTS:
-
-   - `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash`
-   - `nvm install --lts`
-
-4. Install [`yarn`](https://classic.yarnpkg.com/en/docs/install/#debian-stable):
+2. Install [`yarn`](https://classic.yarnpkg.com/en/docs/install/#debian-stable):
 
    - `curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -`
    - `echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list`
    - `sudo apt update && sudo apt install yarn`
 
-5. Clone the repository, run `yarn && yarn build`.
+3. Create a `node` user to run the process and switch to that user:
 
-6. Make sure to setup SSL and edit their path in the `.env` file.
+   - `sudo adduser node`
+   - `su - node`
 
-### Setup Node process
+4. Install [`nvm`](https://github.com/nvm-sh/nvm#installing-and-updating) with latest v12 LTS:
 
-1. Create a process configuration file `/etc/systemd/system/poecurrencymonitor.service` containing the following:
+   - `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash`
+   - `nvm install --lts`
 
-   ```systemd
-   [Unit]
-   Description=PoE Currency Monitor - Backend for the PoE Currency Monitor webapp. [poecurrencymonitor.cf]
+5. Clone the repository, run `yarn && yarn build` (you may need to generate keys if the repo is private with `ssh-keygen`).
 
-   [Service]
-   EnvironmentFile=-/etc/default/poecurrencymonitor
-   ExecStart=/home/node/.nvm/versions/node/<your-node-lts-version>/bin/node /home/node/poe-currency-monitor-backend/dist/index.js
-   WorkingDirectory=/home/node/poe-currency-monitor-backend
-   LimitNOFILE=4096
-   IgnoreSIGPIPE=false
-   KillMode=process
-   User=node
-   SyslogIdentifier=poecurrencymonitor-node
+6. Make sure to setup SSL and edit their path in the `.env` file, **feel free to do this step at the end of the global setup for convenience**.
 
-   [Install]
-   WantedBy=multi-user.target
-   ```
+### SSL HTTPS with Certbot from LetsEncrypt
 
-2. Create an environment file `/etc/default/poecurrencymonitor` containing the following:
+Before continuing on the Nginx and firewall configuration, make sure you have a SSL certificate with a valid domain-name.
 
-   ```
-   NODE_ENV=production
-   ```
+I usually follow [this quick, dead-simple, tutorial](https://itnext.io/node-express-letsencrypt-generate-a-free-ssl-certificate-and-run-an-https-server-in-5-minutes-a730fbe528ca) to generate my free SSL certificate (using NodeJS + Express + LetsEncrypt (Certbot)). It takes less than 5 minutes if you have already mapped your VM IP to your domain-name DNS.
 
-3. Make all the scripts executable with `chmod +x ./scripts/*.sh`
-4. Enable the process on startup `systemctl enable poecurrencymonitor`
-5. Start the process `systemctl start poecurrencymonitor`
-6. Verify everything is working well `systemctl status poecurrencymonitor --l --no-pager`
-   - You can also use `lsof -i -p <api-port>` to verify the Node process is actually listening on the specified port
+Some tips for this step:
+
+- You may need to install `npm` for this step (`node` should already be there with a `v8`), but only for the root user with `sudo apt install npm`.
+
+- I usually run the temporary ACME validation Express server with a `sudo` in order to have access to the port `80`: `sudo node ./index.js`.
+
+- Make sure that the `node` user have access to the SSL keys, as the node process will need to _read_ those keys for the HTTPS server:
+
+  - `setfacl -R -m u:node:rwx /etc/letsencrypt/`
+  - `setfacl -R -m u:node:rwx /etc/letsencrypt/live/`
 
 ### Nginx and firewall configuration
 
@@ -134,24 +139,29 @@ Deployment have been tested on Ubuntu 18.04 LTS, using `systemd`. Please, do not
 
 1. Allow SSH and Nginx HTTP + HTTPS ports:
 
-   - `sudo ufw allow ssh` (this is needed as we don't want to be locked out the SSH session).
+   - `sudo ufw allow ssh` (this is needed as we don't want to be lgoged out of the SSH session)
    - `sudo ufw allow "Nginx Full"` (allow Nginx HTTP + HTTPS)
 
-2. Reload UFW `sudo ufw reload`
+2. Enable UFW `sudo ufw enable`
 
-3. View rules before enabling UFW `sudo ufw status numbered`
+3. Reload UFW `sudo ufw reload`
 
-   - If you want to remove a rule, you can `sudo ufw delete <rule-number>`.
+4. View UFW rules `sudo ufw status numbered`
 
-4. Enable UFW `sudo ufw enable`
+   - If you want to remove a rule, you can `sudo ufw delete <rule-number>`
 
 #### Nginx configuration
 
-This Nginx configuration used will redirect all HTTP request to HTTPS. Also make sure to replace the port used in the `location /` block with the one you setup in the project `.env` file (it's 8443 by default).
+This Nginx configuration used will proxy all Node process request (from 8080 and 8443) to real HTTP and HTTPS ports (80 and 443). Nginx is highly recommended as the `node` user is not a sudo user (and running a node process with `sudo` is really bad) and will not have access to low-level ports such as 443 and 80.
 
-1. Create a configuration file for the domain `sudo nano /etc/nginx/sites-available/poecurrencymonitor.cf`
+1. Make sure to remove Apache2 or it will interfere with Nginx:
 
-2. Add the following content to the Nginx configuration:
+- `sudo apt-get purge apache2`
+- `sudo apt-get remove --purge apache2 apache2-utils`
+
+2. Create a configuration file for the domain `sudo nano /etc/nginx/sites-available/poecurrencymonitor.cf`
+
+3. Add the following content to the Nginx configuration:
 
    ```
    server {
@@ -183,7 +193,49 @@ This Nginx configuration used will redirect all HTTP request to HTTPS. Also make
    }
    ```
 
-### Restarting the API
+4. You can test if the Nginx config file doesn't contain any errors with `sudo nginx -t`
+
+5. Make sure to symlink the `poecurrencymonitor.cf` site-available config to site-enabled directory: `sudo ln -sf /etc/nginx/sites-available/poecurrencymonitor.cf /etc/nginx/sites-enabled`
+
+### Setup Node process as systemd
+
+1. Create a process configuration file `/etc/systemd/system/poecurrencymonitor.service` containing the following:
+
+   ```systemd
+   [Unit]
+   Description=PoE Currency Monitor - Backend for the PoE Currency Monitor webapp. [poecurrencymonitor.cf]
+
+   [Service]
+   EnvironmentFile=-/etc/default/poecurrencymonitor
+   ExecStart=/home/node/.nvm/versions/node/v<your-node-lts-version>/bin/node /home/node/poe-currency-monitor-backend/dist/index.js
+   WorkingDirectory=/home/node/poe-currency-monitor-backend
+   LimitNOFILE=4096
+   IgnoreSIGPIPE=false
+   KillMode=process
+   User=node
+   SyslogIdentifier=poecurrencymonitor-node
+
+   [Install]
+   WantedBy=multi-user.target
+   ```
+
+2. Create an environment file `/etc/default/poecurrencymonitor` containing the following:
+
+   ```
+   NODE_ENV=production
+   ```
+
+3. Make all the scripts executable with `chmod +x ./scripts/*.sh`
+
+4. Enable the process on startup `systemctl enable poecurrencymonitor`
+
+5. Start the process `systemctl start poecurrencymonitor`
+
+6. Verify everything is working well `systemctl status poecurrencymonitor -l --no-pager`
+
+   - You can also use `lsof -i :<api-port>` to verify the Node process is actually listening on the specified port
+
+### Updating the API
 
 - Run `scripts/update.sh` to automatically pull changes, install dependencies, build from source and restart `systemctl` process.
 
