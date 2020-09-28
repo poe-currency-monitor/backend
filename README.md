@@ -116,6 +116,8 @@ Deployment have been tested on Ubuntu 18.04 LTS, using `systemd`. Please, do not
 
 6. Make sure to setup SSL and edit their path in the `.env` file, **feel free to do this step at the end of the global setup for convenience**.
 
+7. Once everything else is setup, you may encounter a CORS error. You need to add the domain-name(s) of your front-end to the `corsWhitelist` array variable in `config/express.ts`.
+
 ### SSL HTTPS with Certbot from LetsEncrypt
 
 Before continuing on the Nginx and firewall configuration, make sure you have a SSL certificate with a valid domain-name.
