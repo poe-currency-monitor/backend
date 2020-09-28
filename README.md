@@ -102,7 +102,7 @@ Deployment have been tested on Ubuntu 18.04 LTS, using `systemd`. Please, do not
    - `echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list`
    - `sudo apt update && sudo apt install yarn`
 
-3. Create a `node` user to run the process and switch to that user:
+3. Create a `node` user to run the Node process, switch to that user:
 
    - `sudo adduser node`
    - `su - node`
@@ -112,17 +112,21 @@ Deployment have been tested on Ubuntu 18.04 LTS, using `systemd`. Please, do not
    - `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash`
    - `nvm install --lts`
 
-5. Clone the repository, run `yarn && yarn build` (you may need to generate keys if the repo is private with `ssh-keygen`).
+5. Clone the repository (you may need to generate keys if the repo is private with `ssh-keygen`), run `yarn && yarn build`.
 
-6. Make sure to setup SSL and edit their path in the `.env` file, **feel free to do this step at the end of the global setup for convenience**.
+6. Create environment variable file (`.env`) with `cp .env.example .env`. You'll need to setup those variable individually but **feel free to do this step at the end of the global setup for convenience** as you need to setup the path to SSL keys which.
 
-7. Once everything else is setup, you may encounter a CORS error. You need to add the domain-name(s) of your front-end to the `corsWhitelist` array variable in `config/express.ts`.
+7. Once everything else is setup, you may encounter a _CORS error_. You need to add the domain-name(s) of your front-end to the `corsWhitelist` array variable in `config/express.ts` (this is a generic error returned by `express + cors`):
+
+```javascript
+const corsWhitelist = ['https://my-frontend-application.com', 'https://pre-prod.my-frontend-application.com'];
+```
 
 ### SSL HTTPS with Certbot from LetsEncrypt
 
-Before continuing on the Nginx and firewall configuration, make sure you have a SSL certificate with a valid domain-name.
+Before continuing on the [Nginx](https://www.nginx.com/) and [UFW (firewall)](https://help.ubuntu.com/community/UFW) configuration, make sure you have an **SSL certificate linked to a valid domain-name**.
 
-I usually follow [this quick, dead-simple, tutorial](https://itnext.io/node-express-letsencrypt-generate-a-free-ssl-certificate-and-run-an-https-server-in-5-minutes-a730fbe528ca) to generate my free SSL certificate (using NodeJS + Express + LetsEncrypt (Certbot)). It takes less than 5 minutes if you have already mapped your VM IP to your domain-name DNS.
+I usually follow **[this quick, dead-simple, tutorial](https://itnext.io/node-express-letsencrypt-generate-a-free-ssl-certificate-and-run-an-https-server-in-5-minutes-a730fbe528ca)** to generate my free SSL certificate _(using NodeJS + Express + LetsEncrypt with Certbot)_. It takes less than 5 minutes if you have already mapped your VM IP to your domain-name DNS.
 
 Some tips for this step:
 
@@ -141,8 +145,8 @@ Some tips for this step:
 
 1. Allow SSH and Nginx HTTP + HTTPS ports:
 
-   - `sudo ufw allow ssh` (this is needed as we don't want to be lgoged out of the SSH session)
-   - `sudo ufw allow "Nginx Full"` (allow Nginx HTTP + HTTPS)
+   - `sudo ufw allow ssh` (this is needed as we don't want to be lgoged out of the SSH session).
+   - `sudo ufw allow "Nginx Full"` (allow Nginx HTTP + HTTPS).
 
 2. Enable UFW `sudo ufw enable`
 
@@ -154,16 +158,23 @@ Some tips for this step:
 
 #### Nginx configuration
 
-This Nginx configuration used will proxy all Node process request (from 8080 and 8443) to real HTTP and HTTPS ports (80 and 443). Nginx is highly recommended as the `node` user is not a sudo user (and running a node process with `sudo` is really bad) and will not have access to low-level ports such as 443 and 80.
+This Nginx configuration will proxy all Node process requests (from `8080` and `8443`) to the real HTTP and HTTPS ports (`80` and `443`).
 
-1. Make sure to remove Apache2 or it will interfere with Nginx:
+Nginx is highly recommended as **the `node` user is not a sudo user** (and running a node process with `sudo` is really bad) and **will not have access to low-level ports such as `443` and `80`**.
 
-- `sudo apt-get purge apache2`
-- `sudo apt-get remove --purge apache2 apache2-utils`
+1. Make sure to remove [Apache2](https://httpd.apache.org/) (it may be bundled by default with your OS) or it will interfere with Nginx:
 
-2. Create a configuration file for the domain `sudo nano /etc/nginx/sites-available/poecurrencymonitor.cf`
+   - `sudo apt-get purge apache2`
+   - `sudo apt-get remove --purge apache2 apache2-utils`
 
-3. Add the following content to the Nginx configuration:
+2. Verify that nothing else is listening on HTTP and HTTPS ports:
+
+   - `lsof -i :80`
+   - `lsof -i :443`
+
+3. Create a configuration file for your domain-name `sudo nano /etc/nginx/sites-available/poecurrencymonitor.cf`
+
+4. Add the following content to the Nginx configuration:
 
    ```
    server {
@@ -195,9 +206,9 @@ This Nginx configuration used will proxy all Node process request (from 8080 and
    }
    ```
 
-4. You can test if the Nginx config file doesn't contain any errors with `sudo nginx -t`
+5. You can test if the Nginx config file doesn't contain any errors with `sudo nginx -t`
 
-5. Make sure to symlink the `poecurrencymonitor.cf` site-available config to site-enabled directory: `sudo ln -sf /etc/nginx/sites-available/poecurrencymonitor.cf /etc/nginx/sites-enabled`
+6. Make sure to symlink the `poecurrencymonitor.cf` site-available config to site-enabled directory: `sudo ln -sf /etc/nginx/sites-available/poecurrencymonitor.cf /etc/nginx/sites-enabled`
 
 ### Setup Node process as systemd
 
