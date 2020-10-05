@@ -41,7 +41,7 @@ const unprotectedPaths: (string | RegExp)[] = ['/api/heartbeat', '/api/auth/', /
  */
 const limiter = rateLimit({
   windowMs: 1000 * 60,
-  max: 30,
+  max: env.nodeEnv === 'production' ? 30 : 0,
 });
 
 let sslPrivateKey: Buffer | null = null;
