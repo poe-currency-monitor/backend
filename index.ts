@@ -12,4 +12,6 @@ import './config/modules-aliases';
   const app = await import('./config/express').then((pkg) => pkg.default);
 
   app.init();
-})().catch(() => {});
+})().catch((err) => {
+  throw err;
+});
