@@ -45,6 +45,8 @@ module.exports = {
   rules: {
     'prettier/prettier': ['error', prettierrc],
     '@typescript-eslint/no-namespace': ['off'],
+    '@typescript-eslint/no-unsafe-assignment': ['off'],
+    '@typescript-eslint/no-unsafe-member-access': ['off'],
   },
 
   overrides: [
