@@ -1,69 +1,35 @@
 import { Segments } from 'celebrate';
-import joi from '@hapi/joi';
+import joi from 'joi';
 
 const historyItemSchema = joi
   .object()
   .keys({
     income: joi.object().keys({
-      chaos: joi
-        .number()
-        .positive()
-        .allow(0)
-        .required(),
-      exalt: joi
-        .number()
-        .positive()
-        .allow(0)
-        .required(),
-      unit: joi
-        .number()
-        .positive()
-        .allow(0)
-        .required(),
+      chaos: joi.number().positive().allow(0).required(),
+      exalt: joi.number().positive().allow(0).required(),
+      unit: joi.number().positive().allow(0).required(),
     }),
 
     // PoE item
-    item: joi
-      .object()
-      .required()
-      .unknown(),
+    item: joi.object().required().unknown(),
   })
   .required();
 
 const historySchema = joi.object().keys({
   id: joi.string().required(),
   tabId: joi.string().required(),
-  date: joi
-    .string()
-    .isoDate()
-    .required(),
+  date: joi.string().isoDate().required(),
 
   income: joi
     .object()
     .keys({
-      chaos: joi
-        .number()
-        .positive()
-        .allow(0)
-        .required(),
-      exalt: joi
-        .number()
-        .positive()
-        .allow(0)
-        .required(),
-      unit: joi
-        .number()
-        .valid(0)
-        .required(),
+      chaos: joi.number().positive().allow(0).required(),
+      exalt: joi.number().positive().allow(0).required(),
+      unit: joi.number().valid(0).required(),
     })
     .required(),
 
-  items: joi
-    .array()
-    .items(historyItemSchema)
-    .min(1)
-    .max(500)
-    .required(),
+  items: joi.array().items(historyItemSchema).min(1).max(500).required(),
 });
 
 export const createHistory = {
@@ -73,12 +39,7 @@ export const createHistory = {
     character: joi.string().required(),
     league: joi.string().required(),
 
-    history: joi
-      .array()
-      .items(historySchema)
-      .min(0)
-      .max(100)
-      .required(),
+    history: joi.array().items(historySchema).min(0).max(100).required(),
   }),
 };
 

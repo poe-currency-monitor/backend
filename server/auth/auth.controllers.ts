@@ -15,7 +15,7 @@ const jwtSignOptions: jwt.SignOptions = {
  * @param req Express request
  * @param res Express response
  */
-export default (req: Request, res: Response): Promise<void> => {
+export default (req: Request, res: Response): Promise<Response<unknown>> => {
   const poesessid = req.body.poesessid as string;
 
   return fetch('https://www.pathofexile.com/my-account', {
@@ -26,16 +26,16 @@ export default (req: Request, res: Response): Promise<void> => {
     },
   })
     .then((response) => response.text())
-    .then(async (html) => {
-      const accountNameMatches = html.match(/\/account\/view-profile\/(.*?)"/);
+    .then((html) => {
+      const accountNameMatches = /\/account\/view-profile\/(.*?)"/.exec(html);
 
       if (accountNameMatches && accountNameMatches[1]) {
         const accountName = accountNameMatches[1];
         const token = jwt.sign({ id: uuid() }, env.secrets.jwt, jwtSignOptions);
 
-        res.json({ token, accountName });
-      } else {
-        res.status(400).json({ error: 'Invalid POESESSID' });
+        return res.json({ token, accountName });
       }
+
+      return res.status(400).json({ error: 'Invalid POESESSID' });
     });
 };

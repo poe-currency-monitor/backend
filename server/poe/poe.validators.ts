@@ -1,5 +1,5 @@
 import { Segments } from 'celebrate';
-import joi from '@hapi/joi';
+import joi from 'joi';
 
 export const characters = {
   [Segments.QUERY]: joi.object().keys({

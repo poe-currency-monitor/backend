@@ -26,7 +26,7 @@ function getCacheName(type: string, league: string): string {
  * @param req Express request.
  * @param res Express response.
  */
-export async function getCurrencyRates(req: Request, res: Response): Promise<void> {
+export async function getCurrencyRates(req: Request, res: Response): Promise<Response<unknown>> {
   const league = req.query.league as string;
   const language = req.query.language as string;
   const type = req.query.type as string;
@@ -36,29 +36,30 @@ export async function getCurrencyRates(req: Request, res: Response): Promise<voi
   if (cache.has(cacheName)) {
     const json = cache.get<Currency.Response>(cacheName);
 
-    res.status(200).json({ ...json });
-
-    return Promise.resolve();
+    return res.status(200).json({ ...json });
   }
 
-  return fetch(`https://poe.ninja/api/data/currencyoverview?league=${league}&type=${type}&language=${language}`, {
-    method: 'get',
-  })
-    .then((response) => response.json().then((json: Currency.Response) => ({ response, json })))
-    .then(({ response, json }) => {
-      if (!response.ok) {
-        res.status(500).json({
-          type,
-          language,
-          league,
-          error: `Unable to retrieve currency-rates from poe.ninja`,
-        });
-      } else {
+  return (
+    fetch(`https://poe.ninja/api/data/currencyoverview?league=${league}&type=${type}&language=${language}`, {
+      method: 'get',
+    })
+      // eslint-disable-next-line promise/no-nesting
+      .then((response) => response.json().then((json: Currency.Response) => ({ response, json })))
+      .then(({ response, json }) => {
+        if (!response.ok) {
+          return res.status(500).json({
+            type,
+            language,
+            league,
+            error: `Unable to retrieve currency-rates from poe.ninja`,
+          });
+        }
+
         cache.set<Currency.Response>(cacheName, json, CACHE_TTL);
 
-        res.status(200).json({ ...json });
-      }
-    });
+        return res.status(200).json({ ...json });
+      })
+  );
 }
 
 /**
@@ -68,7 +69,7 @@ export async function getCurrencyRates(req: Request, res: Response): Promise<voi
  * @param req Express request.
  * @param res Express response.
  */
-export async function getItemRates(req: Request, res: Response): Promise<void> {
+export async function getItemRates(req: Request, res: Response): Promise<Response<unknown>> {
   const league = req.query.league as string;
   const language = req.query.language as string;
   const type = req.query.type as string;
@@ -78,27 +79,28 @@ export async function getItemRates(req: Request, res: Response): Promise<void> {
   if (cache.has(cacheName)) {
     const json = cache.get<Item.Response>(cacheName);
 
-    res.status(200).json({ ...json });
-
-    return Promise.resolve();
+    return res.status(200).json({ ...json });
   }
 
-  return fetch(`https://poe.ninja/api/data/itemoverview?league=${league}&type=${type}&language=${language}`, {
-    method: 'get',
-  })
-    .then((response) => response.json().then((json: Item.Response) => ({ response, json })))
-    .then(({ response, json }) => {
-      if (!response.ok) {
-        res.status(500).json({
-          type,
-          language,
-          league,
-          error: `Unable to retrieve item-rates from poe.ninja`,
-        });
-      } else {
+  return (
+    fetch(`https://poe.ninja/api/data/itemoverview?league=${league}&type=${type}&language=${language}`, {
+      method: 'get',
+    })
+      // eslint-disable-next-line promise/no-nesting
+      .then((response) => response.json().then((json: Item.Response) => ({ response, json })))
+      .then(({ response, json }) => {
+        if (!response.ok) {
+          return res.status(500).json({
+            type,
+            language,
+            league,
+            error: `Unable to retrieve item-rates from poe.ninja`,
+          });
+        }
+
         cache.set<Item.Response>(cacheName, json, CACHE_TTL);
 
-        res.status(200).json({ ...json });
-      }
-    });
+        return res.status(200).json({ ...json });
+      })
+  );
 }

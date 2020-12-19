@@ -25,7 +25,7 @@ function authPOESESSID(poesessid: string, expectedAccountName: string): Promise<
   })
     .then((response) => response.text())
     .then((html) => {
-      const accountNameMatches = html.match(/\/account\/view-profile\/(.*?)"/);
+      const accountNameMatches = /\/account\/view-profile\/(.*?)"/.exec(html);
 
       if (accountNameMatches && accountNameMatches[1]) {
         const accountName = accountNameMatches[1];
@@ -146,9 +146,9 @@ export async function getAllPerAccountName(req: Request, res: Response): Promise
     const mappingHistoriesDocuments = await MappingHistoryModel.find({ accountname }).exec();
 
     if (mappingHistoriesDocuments.length > 0) {
-      const mappingHistoriesJSON: MappingHistoryDocument[] = mappingHistoriesDocuments.map((mappingHistory) =>
+      const mappingHistoriesJSON = mappingHistoriesDocuments.map((mappingHistory) =>
         mappingHistory.toJSON(),
-      );
+      ) as MappingHistoryDocument[];
 
       res.status(200).json(mappingHistoriesJSON);
     } else {
