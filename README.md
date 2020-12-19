@@ -84,7 +84,7 @@ If in development, the returned error (as a JSON response) will show the stacktr
 
 Linting is done with ESLint and formatting with Prettier.
 
-There are already a set of ESLint rules which includes TypeScript best-practices, the `.eslintrc.js` extends the [`@totominc/eslint-config-typescript`](https://www.npmjs.com/package/@totominc/eslint-config-typescript) configuration.
+There are already a set of ESLint rules which includes TypeScript best-practices.
 
 ## Deployment
 
