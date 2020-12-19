@@ -88,7 +88,7 @@ There are already a set of ESLint rules which includes TypeScript best-practices
 
 ## Deployment
 
-Deployment have been tested on Ubuntu 18.04 LTS, using `systemd`. Please, do not use [`pm2`](https://pm2.keymetrics.io/) as there are some issues when accessing _root_ files such as SSL keys.
+Deployment has been tested on Ubuntu 18.04 LTS, using `systemd`. Please, do not use [`pm2`](https://pm2.keymetrics.io/) as there are some issues when accessing _root_ files such as SSL keys.
 
 ### Setup environment
 
