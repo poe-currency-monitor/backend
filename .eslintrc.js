@@ -1,13 +1,33 @@
-module.exports = {
-  extends: ['@totominc/typescript'],
+const prettierrc = require('./.prettierrc');
 
+module.exports = {
   env: {
+    commonjs: true,
+    es6: true,
+    node: true,
     jest: true,
   },
 
+  plugins: ['eslint-comments', 'prettier', 'jest'],
+
+  extends: [
+    'plugin:eslint-comments/recommended',
+    'plugin:promise/recommended',
+    'plugin:jest/recommended',
+
+    'airbnb-typescript/base',
+
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/recommended-requiring-type-checking',
+
+    'plugin:prettier/recommended',
+    'prettier/@typescript-eslint',
+  ],
+
   parserOptions: {
-    project: './tsconfig.json',
-    tsconfigRootDir: '.',
+    tsconfigRootDir: __dirname,
+    project: ['./tsconfig.json'],
   },
 
   settings: {
@@ -16,27 +36,14 @@ module.exports = {
         directory: './tsconfig.json',
       },
     },
+
+    jest: {
+      version: 'detect',
+    },
   },
 
   rules: {
-    'prettier/prettier': [
-      'error',
-      {
-        printWidth: 120,
-        tabWidth: 2,
-        useTabs: false,
-        semi: true,
-        singleQuote: true,
-        quoteProps: 'as-needed',
-        jsxSingleQuote: false,
-        trailingComma: 'all',
-        bracketSpacing: true,
-        jsxBracketSameLine: false,
-        arrowParens: 'always',
-        vueIndentScriptAndStyle: false,
-      },
-    ],
-
+    'prettier/prettier': ['error', prettierrc],
     '@typescript-eslint/no-namespace': ['off'],
   },
 
