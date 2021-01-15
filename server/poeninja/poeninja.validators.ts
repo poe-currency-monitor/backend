@@ -2,6 +2,13 @@
 import { Segments } from 'celebrate';
 import joi from 'joi';
 
+export const allCurrencyQueryParameters = {
+  [Segments.QUERY]: joi.object().keys({
+    league: joi.string().required(),
+    language: joi.string().required(),
+  }),
+};
+
 export const currencyQueryParameters = {
   [Segments.QUERY]: joi.object().keys({
     league: joi.string().required(),
