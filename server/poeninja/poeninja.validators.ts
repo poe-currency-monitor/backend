@@ -2,7 +2,7 @@
 import { Segments } from 'celebrate';
 import joi from 'joi';
 
-export const allCurrencyQueryParameters = {
+export const allCategoriesQueryParameters = {
   [Segments.QUERY]: joi.object().keys({
     league: joi.string().required(),
     language: joi.string().required(),

@@ -6,6 +6,25 @@ import { Currency, Item } from '@interfaces/poeninja.interfaces';
 
 const CACHE_TTL = 60 * 60 * 12;
 const CURRENCY_CATEGORIES = ['Currency', 'Fragment'];
+const ITEM_CATEGORIES = [
+  'DeliriumOrb',
+  'Watchstone',
+  'Oil',
+  'Incubator',
+  'Scarab',
+  'Fossil',
+  'Resonator',
+  'Essence',
+  'DivinationCard',
+  'Prophecy',
+  'SkillGem',
+  'UniqueMap',
+  'Map',
+  'UniqueJewel',
+  'UniqueFlask',
+  'Beast',
+  'Vial',
+];
 
 const cache = new Cache();
 
@@ -26,15 +45,19 @@ function getCacheName(type: string, league: string): string {
  * @param league League reference.
  * @param language poe.ninja language.
  */
-function generateFetchPromise<T>(category: string, league: string, language: string): Promise<T | null> {
+function generateFetchPromise<T>(
+  endpoint: string,
+  category: string,
+  league: string,
+  language: string,
+): Promise<T | null> {
   return new Promise((resolve, reject) => {
-    fetch(`https://poe.ninja/api/data/currencyoverview?league=${league}&type=${category}&language=${language}`, {
+    fetch(`https://poe.ninja/api/data/${endpoint}?league=${league}&type=${category}&language=${language}`, {
       method: 'get',
     })
       .then((response) => {
         if (!response.ok) {
           reject(new Error(`Unable to fetch ${category} poe.ninja rates.`));
-
           return null;
         }
 
@@ -42,11 +65,10 @@ function generateFetchPromise<T>(category: string, league: string, language: str
       })
       .then((json) => {
         if (!json) {
-          reject(new Error(`Unexpected null value while fetching ${category} poe.ninja rates`));
+          reject(new Error(`Unexpected null value while fetching ${category} poe.ninja rates.`));
         }
 
         resolve(json);
-
         return json;
       })
       .catch((err) => reject(err));
@@ -54,65 +76,91 @@ function generateFetchPromise<T>(category: string, league: string, language: str
 }
 
 /**
- * Fetch all currency-rates types from the `/currencyoverview` poe.ninja endpoint.
+ * Fetch all type-categories rates from poe.ninja. Cache automatically
+ * poe.ninja responses.
+ *
+ * A type can be `CURRENCY` or `ITEM`:
+ * - type is **CURRENCY**: Currency, Fragment, ...
+ * - type is **ITEM**: Helmet, Axe, Ring, Map, ...
  *
  * @param req Express request.
  * @param res Express response.
+ * @param categories poe.ninja type categories.
+ * @param endpoint poe.ninja endpoint.
  */
-export async function getAllCurrencyRates(req: Request, res: Response): Promise<Response<unknown>> {
+export async function getAllTypeRates<T>(
+  req: Request,
+  res: Response,
+  categories: string[],
+  endpoint: string,
+): Promise<Response<T>> {
   const league = req.query.league as string;
   const language = req.query.language as string;
 
-  const hasCachedCategories = CURRENCY_CATEGORIES.every((category) => cache.has(getCacheName(category, league)));
+  const hasCachedCategories = categories.every((category) => cache.has(getCacheName(category, league)));
 
   if (hasCachedCategories) {
-    const cachedCategories = CURRENCY_CATEGORIES.map((category) => ({
-      type: category,
-      response: cache.get(getCacheName(category, league)) as Currency.Response,
+    const cachedCategories = categories.map((category, i) => ({
+      type: categories[i],
+      response: cache.get(getCacheName(category, league)) as T,
     }));
 
     return res.status(200).json({ categories: cachedCategories });
   }
 
   try {
-    const promises = CURRENCY_CATEGORIES.map((category) =>
-      generateFetchPromise<Currency.Response>(category, league, language),
-    );
+    const promises = categories.map((category) => generateFetchPromise<T>(endpoint, category, league, language));
+    const poeninjaResponses = await Promise.all(promises);
 
-    const currencyResponses = await Promise.all(promises);
-    const json = currencyResponses.map((currencyResponse, i) => ({
-      type: CURRENCY_CATEGORIES[i],
-      response: currencyResponse,
+    const json = poeninjaResponses.map((poeninjaResponse, i) => ({
+      type: categories[i],
+      response: poeninjaResponse,
     }));
 
-    currencyResponses.forEach((currencyResponse, i) =>
-      cache.set(getCacheName(CURRENCY_CATEGORIES[i], league), currencyResponse, CACHE_TTL),
+    poeninjaResponses.forEach((poeninjaResponse, i) =>
+      cache.set(getCacheName(categories[i], league), poeninjaResponse, CACHE_TTL),
     );
 
-    return res.status(200).json({ ...json });
+    return res.status(200).json({ categories: json });
   } catch (error) {
-    return res.status(500).json(`Unable to fetch poe.ninja currency-rates`);
+    return res.status(500).json(`Unable to fetch poe.ninja rates`);
   }
 }
 
 /**
+ * Fetch all currency-rates types from poe.ninja endpoint.
+ *
+ * @param req Express request.
+ * @param res Express response.
+ */
+export function getAllCurrencyRates(req: Request, res: Response): Promise<Response<unknown>> {
+  return getAllTypeRates(req, res, CURRENCY_CATEGORIES, 'currencyoverview');
+}
+
+/**
+ * Fetch all item-rates types from poe.ninja endpoint.
+ *
+ * @param req Express request.
+ * @param res Express response.
+
+ */
+export function getAllItemRates(req: Request, res: Response): Promise<Response<unknown>> {
+  return getAllTypeRates(req, res, ITEM_CATEGORIES, 'itemoverview');
+}
+
+/**
+ * **DEPRECATED**: please use the `/all-currency-rates/` endpoint.
+ *
  * Fetch currency-rates from the `/currencyoverview` poe.ninja endpoint.
  *
  * @param req Express request.
  * @param res Express response.
+ * @deprecated
  */
 export async function getCurrencyRates(req: Request, res: Response): Promise<Response<unknown>> {
   const league = req.query.league as string;
   const language = req.query.language as string;
   const type = req.query.type as string;
-
-  const cacheName = getCacheName(type, league);
-
-  if (cache.has(cacheName)) {
-    const json = cache.get<Currency.Response>(cacheName);
-
-    return res.status(200).json({ ...json });
-  }
 
   return (
     fetch(`https://poe.ninja/api/data/currencyoverview?league=${league}&type=${type}&language=${language}`, {
@@ -130,31 +178,24 @@ export async function getCurrencyRates(req: Request, res: Response): Promise<Res
           });
         }
 
-        cache.set<Currency.Response>(cacheName, json, CACHE_TTL);
-
         return res.status(200).json({ ...json });
       })
   );
 }
 
 /**
+ * **DEPRECATED**: please use the `/all-item-rates/` endpoint.
+ *
  * Fetch item-rates from the `/itemoverview` poe.ninja endpoint.
  *
  * @param req Express request.
  * @param res Express response.
+ * @deprecated
  */
 export async function getItemRates(req: Request, res: Response): Promise<Response<unknown>> {
   const league = req.query.league as string;
   const language = req.query.language as string;
   const type = req.query.type as string;
-
-  const cacheName = getCacheName(type, league);
-
-  if (cache.has(cacheName)) {
-    const json = cache.get<Item.Response>(cacheName);
-
-    return res.status(200).json({ ...json });
-  }
 
   return (
     fetch(`https://poe.ninja/api/data/itemoverview?league=${league}&type=${type}&language=${language}`, {
@@ -171,8 +212,6 @@ export async function getItemRates(req: Request, res: Response): Promise<Respons
             error: `Unable to retrieve item-rates from poe.ninja`,
           });
         }
-
-        cache.set<Item.Response>(cacheName, json, CACHE_TTL);
 
         return res.status(200).json({ ...json });
       })
