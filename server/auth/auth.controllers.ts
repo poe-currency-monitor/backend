@@ -25,7 +25,13 @@ export default (req: Request, res: Response): Promise<Response<unknown>> => {
       Cookie: `POESESSID=${poesessid}`,
     },
   })
-    .then((response) => response.text())
+    .then((response) => {
+      if (response.ok) {
+        return response.text();
+      }
+
+      throw new Error(`Unexpected response status from Path of Exile website: ${response.status} status-code`);
+    })
     .then((html) => {
       const accountNameMatches = /\/account\/view-profile\/(.*?)"/.exec(html);
 
@@ -37,5 +43,6 @@ export default (req: Request, res: Response): Promise<Response<unknown>> => {
       }
 
       return res.status(400).json({ error: 'Invalid POESESSID' });
-    });
+    })
+    .catch((err) => res.status(503).json({ error: err.message }));
 };
