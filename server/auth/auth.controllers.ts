@@ -22,7 +22,8 @@ export default (req: Request, res: Response): Promise<Response<unknown>> => {
     method: 'get',
     redirect: 'follow',
     headers: {
-      Cookie: `POESESSID=${poesessid}`,
+      'Cookie': `POESESSID=${poesessid}`,
+      'User-Agent': `PoECurrencyMonitor/0.1.0`,
     },
   })
     .then((response) => {

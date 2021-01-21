@@ -21,7 +21,8 @@ export async function getCharacters(req: Request, res: Response): Promise<Respon
       method: 'get',
       redirect: 'follow',
       headers: {
-        Cookie: `POESESSID=${poesessid}`,
+        'Cookie': `POESESSID=${poesessid}`,
+        'User-Agent': `PoECurrencyMonitor/0.1.0`,
       },
     })
       // eslint-disable-next-line promise/no-nesting
@@ -50,7 +51,8 @@ export async function getStashTabs(req: Request, res: Response): Promise<Respons
       {
         method: 'get',
         headers: {
-          Cookie: `POESESSID=${poesessid}`,
+          'Cookie': `POESESSID=${poesessid}`,
+          'User-Agent': `PoECurrencyMonitor/0.1.0`,
         },
       },
     )
@@ -86,7 +88,8 @@ export async function getStashItems(req: Request, res: Response): Promise<Respon
     {
       method: 'get',
       headers: {
-        Cookie: `POESESSID=${poesessid}`,
+        'Cookie': `POESESSID=${poesessid}`,
+        'User-Agent': `PoECurrencyMonitor/0.1.0`,
       },
     },
   )
@@ -101,7 +104,8 @@ export async function getStashItems(req: Request, res: Response): Promise<Respon
         {
           method: 'get',
           headers: {
-            Cookie: `POESESSID=${poesessid}`,
+            'Cookie': `POESESSID=${poesessid}`,
+            'User-Agent': `PoECurrencyMonitor/0.1.0`,
           },
         },
       )
