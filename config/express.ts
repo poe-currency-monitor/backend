@@ -27,14 +27,10 @@ const app = express();
  */
 const corsWhitelist: string[] = ['https://poe.totominc.io/', 'https://poe.totominc.io'];
 
-if (env.nodeEnv !== 'production') {
-  corsWhitelist.push('http://localhost:3000');
-}
-
 /**
  * Array of unprotected paths that doesn't require a JWT auth.
  */
-const unprotectedPaths: (string | RegExp)[] = ['/api/heartbeat', '/api/auth/', /^\/api\/mapping-history\/import\/.*/];
+const unprotectedPaths: (string | RegExp)[] = ['/api/heartbeat/', '/api/auth/', /^\/api\/mapping-history\/import\/.*/];
 
 /**
  * Options for `express-rate-limit`.
