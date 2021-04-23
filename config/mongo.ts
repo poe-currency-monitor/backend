@@ -21,7 +21,9 @@ export default {
         .then(() =>
           // eslint-disable-next-line no-console
           console.log(`> Mongoose successfully connected to ${env.mongo.uri}`),
-        );
+        )
+        // eslint-disable-next-line no-console
+        .catch(console.error);
     } catch (err) {
       throw new Error(`Unable to connect to Mongo database: ${env.mongo.uri}`);
     }
