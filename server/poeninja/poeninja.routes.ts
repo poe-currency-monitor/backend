@@ -6,8 +6,8 @@ import { getAllCurrencyRates, getAllItemRates, getCurrencyRates, getItemRates } 
 
 const router = Router();
 
-router.route('/all-currency-rates/').get(celebrate(allCategoriesQueryParameters), getAllCurrencyRates);
-router.route('/all-item-rates/').get(celebrate(allCategoriesQueryParameters), getAllItemRates);
+router.route('/all-currencies-rates/').get(celebrate(allCategoriesQueryParameters), getAllCurrencyRates);
+router.route('/all-items-rates/').get(celebrate(allCategoriesQueryParameters), getAllItemRates);
 router.route('/currency-rates/').get(celebrate(currencyQueryParameters), getCurrencyRates);
 router.route('/item-rates/').get(celebrate(itemQueryParameters), getItemRates);
 
